@@ -130,7 +130,7 @@ class AppController {
         serverAnswer = download(id)
         var jsonToValidate = parse(decode(fileToValidate, "UTF-8"))
 
-      // take off fields with null values
+      // clear file to validate : take off fields with null values
         var result = mapper.writeValueAsString(jsonToValidate.values)
 
         val jsonToValidateChecked : JsonNode = mapper.readTree(result)
@@ -142,7 +142,6 @@ class AppController {
           serverAnswer = compact(render(("action" -> "validateDocument") ~ ("id" -> id)
           ~ ("status" -> "SUCCESS")))
         } else{
-
           // get all errors from ProcessingReport value
           val report = processingReport.iterator()
           var message = "Message : "
@@ -150,8 +149,7 @@ class AppController {
           while(report.hasNext){
             var reportMessage : ProcessingMessage = report.next()
             message = message + reportMessage.asJson().get("message").asText() + ". ";
-          }
-
+            }
           serverAnswer = compact(render(("action" -> "validateDocument") ~ ("id" -> id)
           ~ ("status" -> "ERROR") ~ ("message" -> message)))
         }
@@ -161,6 +159,7 @@ class AppController {
         serverAnswer = compact(render(("action" -> "validateDocument") ~ ("id" -> id)
         ~ ("status" -> "ERROR")))
     }
+    currentSchema = null
     serverAnswer
   }
 
